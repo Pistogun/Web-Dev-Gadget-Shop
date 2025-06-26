@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gadget Shop - Order History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .order-items {
+            display: none;
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">GadgetShop</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="history.html">Order History</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Order History</h2>
+            <button id="clear-history" class="btn btn-danger btn-sm">🗑️ Clear History</button>
+        </div>
+        <ul class="list-group" id="order-history"></ul>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        function loadOrderHistory() {
+            const history = JSON.parse(localStorage.getItem("orderHistory")) || [];
+            const container = $("#order-history");
+            container.empty();
+
+            if (history.length === 0) {
+                container.append('<li class="list-group-item">No previous orders.</li>');
+            } else {
+                history.forEach((order, index) => {
+                    let itemsHtml = '';
+                    order.items.forEach(item => {
+                        itemsHtml += `<li>${item.name} - ₱${item.price}</li>`;
+                    });
+
+                    container.append(`
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>Customer:</strong> Customer ${index + 1}<br>
+                <strong>Date:</strong> ${order.date}<br>
+                <strong>Items:</strong> ${order.items.length}<br>
+                <strong>Total:</strong> ₱${order.total}
+              </div>
+              <button class="btn btn-sm btn-primary view-details" data-id="${index}">View Items</button>
+            </div>
+            <ul class="order-items mt-2" id="items-${index}">${itemsHtml}</ul>
+          </li>
+        `);
+                });
+
+                $(".view-details").on("click", function() {
+                    const id = $(this).data("id");
+                    $(`#items-${id}`).slideToggle();
+                });
+            }
+        }
+
+        $(document).ready(function() {
+            loadOrderHistory();
+
+            $("#clear-history").on("click", function() {
+                if (confirm("Are you sure you want to clear all order history?")) {
+                    localStorage.removeItem("orderHistory");
+                    loadOrderHistory();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

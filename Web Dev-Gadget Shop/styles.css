@@ -1,0 +1,17 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card {
+    width: 150px;
+    height: 350px;
+}
+
+.col-md-4 {
+    margin-right: -200px;
+}
